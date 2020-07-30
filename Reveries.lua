@@ -1,0 +1,415 @@
+local LAM2 = LibAddonMenu2
+
+local RV = {
+    name = "Reveries",
+    version = "0.1"
+}
+
+-- Mapping from emote slash command to numeric index
+RV.emoteIndexes = {}
+RV.mementoIndexes = {}
+
+-----------------------------------------------------------------------------
+-- Mapping from the full Memento name to a shortcut
+-----------------------------------------------------------------------------
+local mementoNicknames =
+{
+    ["Ghost Lantern"]                  = "ghostlantern",
+    ["Snow Cadwell"]                   = "snowcadwell",
+    ["Sanguine's Goblet"]              = "sanguine",
+    ["Finvir's Trinket"]               = "beam",
+    ["Flame Eruption"]                 = "eruption",
+    ["Dwarven Tonal Forks"]            = "tonalfork",
+    ["Blackfeather Court Whistle"]     = "crowwhistle",
+    ["Murderous Strike"]               = "murderstrike",
+    ["Jubilee Cake 2017"]              = "cake2017",
+    ["Wild Hunt Leaf-Dance Aura"]      = "leafdance",
+    ["Dwemervamidium Mirage"]          = "dwemermirage",
+    ["Breda's Bottomless Mead Mug"]    = "bredamug",
+    ["Justal's Falcon"]                = "falcon",
+    ["Miniature Dwarven Sun"]          = "dwarvensun",
+    ["Neramo's Lightning Stick"]       = "neramo",
+    ["Lena's Wand of Finding"]         = "wandfind",
+    ["Kyne's Tablet of Storms"]        = "kynestorm",
+    ["Murkmire Grave-Stake"]           = "gravestake",
+    ["Prismatic Banner Ribbon"]        = "bannerribbon",
+    ["Gold Dragon Hand Projector"]     = "golddragon",
+    ["Crow's Calling"]                 = "crowcall",
+    ["Glanir's Smoke Bomb"]            = "smokebomb",
+    ["Flame Pixie"]                    = "flamepixie",
+    ["Blade of the Blood Oath"]        = "bloodoath",
+    ["Clockwork Obscuros"]             = "obscuros",
+    ["Nanwen's Sword"]                 = "nanwen",
+    ["Box of Forbidden Relics"]        = "relicbox",
+    ["Storm Atronach Transform"]       = "stormxform",
+    ["Wild Hunt Transform"]            = "wildxform",
+    ["Juggler's Knives"]               = "juggleknives",
+    ["Replica Tonal Inverter"]         = "tonalinverter",
+    ["Gryphon Feather Talisman"]       = "gryphonfeather",
+    ["Cherry Blossom Branch"]          = "petal",
+    ["Fire-Breather's Torches"]        = "firebreath",
+    ["Storm Orb Juggle"]               = "juggleorb",
+    ["Dragonhorn Curio"]               = "dragonhorn",
+    ["Questionable Meat Sack"]         = "meatsack",
+    ["Brittle Burial Urn"]             = "maneurn",
+    ["Twilight Shard"]                 = "twilightshard",
+    ["Wyrd Elemental Plume"]           = "wyrdplume",
+    ["Wall of Life Brush"]             = "walloflife",
+    ["Bone Dragon Summons Focus"]      = "bonedragon",
+    ["Storm Atronach Aura"]            = "stormaura",
+    ["Dwarven Puzzle Orb"]             = "puzzleorb",
+    ["Jubilee Cake 2020"]              = "cake2020",
+    ["Fetish of Anger"]                = "fetishofanger",
+    ["Psijic Celestial Orb"]           = "sloadpearl",
+    ["Scalecaller Rune of Levitation"] = "levitate",
+    ["Chains of the Ice Witch"]        = "chains",
+    ["Fire Rock"]                      = "firerock",
+    ["Discourse Amaranthine"]          = "amaranthine",
+    ["Sapiarchic Discorporation Lens"] = "discorp",
+    ["Bone Digger's Trinket"]          = "bonedig",
+    ["Malacath's Wrathful Flame"]      = "malacath",
+    ["Scalecaller Frost Shard"]        = "scalecaller",
+    ["Token of Root Sunder"]           = "rootsunder",
+    ["Fiery Orb"]                      = "fireorb",
+    ["Gourd-Gallows Stump"]            = "gourdstump",
+    ["Dreamer's Chime"]                = "dreamers",
+    ["Witchmother's Whistle"]          = "witchmother",
+    ["Almalexia's Enchanted Lantern"]  = "lantern",
+    ["Sword-Swallower's Blade"]        = "swallowsword",
+    ["Battered Bear Trap"]             = "beartrap",
+    ["Hidden Pressure Vent"]           = "vent",
+    ["Meridian Possession Prism"]      = "meridiaprism",
+    ["Mezha-dro's Sealing Amulet"]     = "sealtear",
+    ["Dragon Flight Illusion Gem"]     = "dragons",
+    ["Apple-Bobbing Cauldron"]         = "applebob",
+    ["Nirnroot Wine"]                  = "nirnrootwine",
+    ["Lodorr's Crown"]                 = "lodorr",
+    ["Cadwell's Chaotic Portal"]       = "cadwellportal",
+    ["Yokudan Totem"]                  = "yokudantotem",
+    ["Antiquarian's Eye"]              = "scry",
+    ["Umbral Projector"]               = "umbral",
+    ["Coin of Illusory Riches"]        = "coinfall",
+    ["Wooden Grave-Stake"]             = "gravestake2",
+    ["Swarm of Crows"]                 = "crowball",
+    ["Psijic Tautology Glass"]         = "tautology",
+    ["Bonesnap Binding Stone"]         = "bonesnap",
+    ["Vossa-satl"]                     = "vossasatl",
+    ["Mire Drum"]                      = "miredrum",
+    ["Rind-Renewing Pumpkin"]          = "pumpkin",
+    ["Fungimancer's Prayer-Beads"]     = "prayerbeads",
+    ["Mud Ball Pouch"]                 = "mudball",
+    ["Archaic Lore Tablets"]           = "loretablet",
+    ["Jubilee Cake 2016"]              = "cake2016",
+    ["Werewolf Behemoth Sigil"]        = "werewolf",
+    ["Psijic Scrying Talisman"]        = "portal",
+    ["Kick Ball"]                      = "kickball",
+    ["Jubilee Cake 2019"]              = "cake2019",
+    ["Festive Noise Maker"]            = "noisemaker",
+    ["Corruption of Maarselok"]        = "maarselok",
+    ["Antiquarian's Telescope"]        = "telescope",
+    ["Jester's Scintillator"]          = "jester",
+    ["Blizzard Globe"]                 = "blizzardglobe",
+    ["Pint of Belching"]               = "belch",
+    ["Bright Moons"]                   = "brightmoons",
+    ["Winnowing Plague Decoction"]     = "plague",
+    ["Sea Sload Dorsal Fin"]           = "sloadfin",
+    ["Orb of Magnus"]                  = "sunbeam",
+    ["Dream Amulet of Argon"]          = "dreamargon",
+    ["The Pie of Misrule"]             = "misrule",
+    ["Everlasting Snowball"]           = "snowball",
+    ["Skeletal Marionette"]            = "skellypuppet",
+    ["Accursed Gray Reliquary"]        = "grayreliquary",
+    ["Floral Swirl Aura"]              = "floralswirl",
+    ["Ritual Circle Totem"]            = "ritualcircle",
+    ["Jester's Festival Joke Popper"]  = "jokepop",
+    ["Jubilee Cake 2018"]              = "cake2018",
+}
+
+-----------------------------------------------------------------------------
+-- Settings UI Panel
+-----------------------------------------------------------------------------
+local function sortedKeys(orig)
+    local t = {}
+    for k,v in pairs(orig) do
+        table.insert(t, k)
+    end
+    table.sort(t)
+    return t
+end
+
+function RV.CreateSettingsPanel()
+    local panelData = {
+        type = "panel",
+        name = RV.name,
+        displayName = RV.name .. ": Emotes and Mementos",
+        author = "StorybookTerror",
+        version = RV.version,
+        registerForDefaults = true,
+        website = "http://github.com/storybookterror/reveries"
+    }
+    LAM2:RegisterAddonPanel(RV.name, panelData)
+
+    local options = {
+        {
+            type = "header",
+            name = "Settings",
+        },
+        {
+            type = "checkbox",
+            name = "Active",
+            tooltip = "When set, Reveries will listen to chat and perform emotes and mementos.",
+            width = "full",
+            default = RV.vars.active,
+            getFunc = function() return RV.vars.active end,
+            setFunc =
+                function(value)
+                    if value then
+                        RV.Enable()
+                    else
+                        RV.Disable()
+                    end
+                end
+        },
+        {
+            type = "submenu",
+            name = "Chat Channels",
+            controls = {}
+        },
+        {
+            type = "submenu",
+            name = "Emotes to Allow",
+            controls = {}
+        },
+        {
+            type = "submenu",
+            name = "Mementos to Allow",
+            controls = {}
+        },
+    }
+
+    -- Add chat channels
+    local chatChannelNames = {
+        { CHAT_CHANNEL_EMOTE, "/emote" },
+        { CHAT_CHANNEL_PARTY, "/group" },
+        { CHAT_CHANNEL_SAY, "/say" },
+        { CHAT_CHANNEL_WHISPER, "/whisper" },
+        { CHAT_CHANNEL_YELL, "/yell" },
+        { CHAT_CHANNEL_ZONE, "/zone" },
+    }
+
+    for i = 1, 5 do
+        local id = GetGuildId(i)
+        local guild = GetGuildName(id)
+        table.insert(chatChannelNames, { CHAT_CHANNEL_GUILD_1 + i - 1, string.format("/g%d: %s", i, guild) })
+        table.insert(chatChannelNames, { CHAT_CHANNEL_OFFICER_1 + i - 1, string.format("/o%d: %s [Officers]", i, guild) })
+    end
+
+    for i, chanInfo in ipairs(chatChannelNames) do
+        local channelEnum = chanInfo[1]
+        local channelName = chanInfo[2]
+
+        table.insert(options[3].controls, {
+            type = "checkbox",
+            name = channelName,
+            width = "full",
+            default = channelEnum == CHAT_CHANNEL_PARTY,
+            getFunc = function() return RV.vars.activeChats[channelEnum] end,
+            setFunc = function(value) RV.vars.activeChats[channelEnum] = value end,
+        })
+    end
+
+    -- Add emote checkboxes
+    sortedEmotes = sortedKeys(RV.emoteIndexes)
+    for _, k in ipairs(sortedEmotes) do
+        table.insert(options[4].controls, {
+            type = "checkbox",
+            name = "/" .. k,
+            width = "full",
+            default = true,
+            getFunc = function() return not RV.vars.disallowed_emotes[k] end,
+            setFunc = function(value) if value then RV.vars.disallowed_emotes[k] = nil else RV.vars.disallowed_emotes[k] = not value end end,
+        })
+    end
+
+    -- Add memento checkboxes
+    sortedMementos = sortedKeys(RV.mementoIndexes)
+    for _, k in pairs(sortedMementos) do
+        if k:lower() ~= k then
+            local m = RV.mementoIndexes[k]
+            table.insert(options[5].controls, {
+                type = "checkbox",
+                name = mementoNicknames[k] and string.format("%s [%s]", k, mementoNicknames[k]) or k,
+                width = "full",
+                default = true,
+                getFunc = function() return not RV.vars.disallowed_mementos[m] end,
+                setFunc = function(value) if value then RV.vars.disallowed_mementos[m] = nil else RV.vars.disallowed_mementos[m] = true end end,
+            })
+        end
+    end
+
+    LAM2:RegisterOptionControls(RV.name, options)
+end
+
+-----------------------------------------------------------------------------
+-- Handle Chat Messages
+-----------------------------------------------------------------------------
+function RV.OnChatMessageChannel(eventCode, channelType, fromCharacter, msg, _, fromAccount)
+    -- Treat Whisper/Sent Whispers the same
+    if channelType == CHAT_CHANNEL_WHISPER_SENT then
+        channelType = CHAT_CHANNEL_WHISPER
+    end
+
+    -- Skip any channels we're not supposed to listen to
+    if not RV.vars.activeChats[channelType] then
+        return
+    end
+
+    -- Ignore any messages not prefixed for our add-on
+    if msg:sub(1, 3):upper() ~= "RV " then
+        return
+    end
+
+    msg = msg:sub(4)
+
+    local emote = RV.emoteIndexes[msg]
+    local memento = RV.mementoIndexes[msg]
+
+    if emote then
+        if RV.vars.disallowed_emotes[msg] then
+            d(RV.name .. ': Disallowed emote /' .. msg .. '...ignoring.')
+        else
+            PlayEmoteByIndex(emote)
+        end
+    elseif memento then
+        if RV.vars.disallowed_mementos[memento] then
+            d(RV.name .. ': Disallowed memento <' .. msg .. '>...ignoring.')
+        elseif IsCollectibleUsable(memento) then
+            UseCollectible(memento)
+        else
+            local blockReason = GetCollectibleBlockReason(memento)
+            local blockReasons = {
+                [COLLECTIBLE_USAGE_BLOCK_REASON_BLOCKED_BY_SUBZONE] = "unable to use in subzone",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_BLOCKED_BY_ZONE] = "unable to use in zone",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_DEAD] = "dead",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_ALLIANCE] = "invalid alliance",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_CLASS] = "class",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_COLLECTIBLE] = "invalid collectible",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_GENDER] = "invalid gender",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_RACE] = "invalid race",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_IN_WATER] = "in water",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_ON_COOLDOWN] = "on cooldown",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_ON_MOUNT] = "on mount",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_PLACED_IN_HOUSE] = "placed in house",
+                [COLLECTIBLE_USAGE_BLOCK_REASON_TARGET_REQUIRED] = "requires target",
+            }
+            d(RV.name .. ': Cannot use memento (' .. (blockReasons[blockReason] or 'unknown reason') .. ')')
+        end
+    else
+        d(RV.name .. ': Unrecognized command: ' .. msg)
+    end
+end
+
+-----------------------------------------------------------------------------
+-- On/Off
+-----------------------------------------------------------------------------
+function RV.Enable()
+    RV.vars.active = true
+    EVENT_MANAGER:RegisterForEvent(RV.name, EVENT_CHAT_MESSAGE_CHANNEL, RV.OnChatMessageChannel)
+end
+
+function RV.Disable()
+    RV.vars.active = false
+    EVENT_MANAGER:UnregisterForEvent(RV.name, EVENT_CHAT_MESSAGE_CHANNEL)
+end
+
+-----------------------------------------------------------------------------
+-- Slash Command Handlers
+-----------------------------------------------------------------------------
+function RV.HandleSlashCommand(msg)
+    if msg == "on" then
+        RV.Enable()
+        d(RV.name .. " activated - will listen to chat")
+    elseif msg == "off" then
+        RV.Disable()
+        d(RV.name .. " disabled - will ignore chat")
+    elseif msg == "help" then
+        d(RV.name .. " Help: Use Settings > Addons > " .. RV.name .. " to configure the add-on.")
+        d("/rv on - Listen to incoming chat and perform actions")
+        d("/rv off - Ignore any incoming action requests")
+    end
+end
+
+-- Register our slash commands
+SLASH_COMMANDS["/rv"] = RV.HandleSlashCommand
+
+-----------------------------------------------------------------------------
+-- Add-on initialization
+-----------------------------------------------------------------------------
+function RV.Initialize()
+    -- Set up saved variables
+    RV.vars = ZO_SavedVars:NewAccountWide("ReveriesVars", 1, nil, {
+        disallowed_emotes = {},
+        disallowed_mementos = {},
+        active = true,
+        activeChats = {
+            [CHAT_CHANNEL_EMOTE] = false,
+            [CHAT_CHANNEL_SAY] = false,
+            [CHAT_CHANNEL_YELL] = false,
+            [CHAT_CHANNEL_PARTY] = true,
+            [CHAT_CHANNEL_ZONE] = false,
+            [CHAT_CHANNEL_WHISPER] = false,
+            [CHAT_CHANNEL_GUILD_1] = false,
+            [CHAT_CHANNEL_GUILD_2] = false,
+            [CHAT_CHANNEL_GUILD_3] = false,
+            [CHAT_CHANNEL_GUILD_4] = false,
+            [CHAT_CHANNEL_GUILD_5] = false,
+            [CHAT_CHANNEL_OFFICER_1] = false,
+            [CHAT_CHANNEL_OFFICER_2] = false,
+            [CHAT_CHANNEL_OFFICER_3] = false,
+            [CHAT_CHANNEL_OFFICER_4] = false,
+            [CHAT_CHANNEL_OFFICER_5] = false,
+        },
+    })
+
+    -- Set up Emote -> Index mapping
+    local num_emotes = GetNumEmotes()
+
+    for i = 1, num_emotes do
+        name = GetEmoteSlashNameByIndex(i):sub(2)
+        RV.emoteIndexes[name] = i
+    end
+
+    -- Set up Memento -> Index mapping
+    local num_mementos = GetTotalCollectiblesByCategoryType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO)
+
+    for i = 1, num_mementos do
+        id = GetCollectibleIdFromType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO, i)
+        name, _, _, _, unlocked = GetCollectibleInfo(id)
+        if unlocked then
+            RV.mementoIndexes[name] = id
+            if mementoNicknames[name] then
+                RV.mementoIndexes[mementoNicknames[name]] = id
+            end
+        end
+    end
+
+    -- Set up Settings UI Panel
+    RV.CreateSettingsPanel()
+
+    if RV.vars.active then
+        RV.Enable()
+    end
+end
+
+-----------------------------------------------------------------------------
+-- Add-on loading callback
+-----------------------------------------------------------------------------
+local function OnAddonLoaded(_, AddonName)
+    if AddonName ~= RV.name then return end
+
+    EVENT_MANAGER:UnregisterForEvent(RV.name, EVENT_ADD_ON_LOADED)
+    RV.Initialize()
+end
+
+-- Register our add-on
+EVENT_MANAGER:RegisterForEvent(RV.name, EVENT_ADD_ON_LOADED, OnAddonLoaded)
