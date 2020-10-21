@@ -344,8 +344,37 @@ function RV.HandleSlashCommand(msg)
     end
 end
 
+function RV.RegisterSubCommand(cmd, shortname, longname, description)
+    local sub = cmd:RegisterSubCommand()
+    sub:AddAlias(shortname)
+    sub:SetCallback(function() StartChatInput("rv " .. longname) end)
+    sub:SetDescription(description)
+end
+
 -- Register our slash commands
-SLASH_COMMANDS["/rv"] = RV.HandleSlashCommand
+function RV.RegisterSlashCommands()
+    local lsc = LibSlashCommander
+    if lsc then
+        local cmd = lsc:Register("/rv", RV.HandleSlashCommand, "Reveries")
+
+        for name in pairs(RV.emoteIndexes) do
+            RV.RegisterSubCommand(cmd, name, name,
+                                  "Play /" .. name .. " emote")
+        end
+
+        for name in pairs(RV.mementoIndexes) do
+            alias = name:gsub(" ", "-")
+            RV.RegisterSubCommand(cmd, alias, name,
+                                  "Play \"" .. name .. "\" memento")
+            if mementoNicknames[name] then
+                RV.RegisterSubCommand(cmd, mementoNicknames[name], name,
+                                      "Play \"" .. name .. "\" memento")
+            end
+        end
+    else
+        SLASH_COMMANDS["/rv"] = RV.HandleSlashCommand
+    end
+end
 
 -----------------------------------------------------------------------------
 -- Add-on initialization
@@ -392,14 +421,19 @@ function RV.Initialize()
         name, _, _, _, unlocked = GetCollectibleInfo(id)
         if unlocked then
             RV.mementoIndexes[name] = id
-            if mementoNicknames[name] then
-                RV.mementoIndexes[mementoNicknames[name]] = id
-            end
         end
     end
 
     -- Set up Settings UI Panel
     RV.CreateSettingsPanel()
+
+    RV.RegisterSlashCommands()
+
+    for name in pairs(RV.mementoIndexes) do
+        if mementoNicknames[name] then
+            RV.mementoIndexes[mementoNicknames[name]] = id
+        end
+    end
 
     if RV.vars.active then
         RV.Enable()
