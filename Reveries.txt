@@ -2,7 +2,7 @@
 ## Description: Play simultaneous emotes and mementos for simple choreography
 ## Author: |cf7a009StorybookTerror|r
 ## Version: 0.1
-## APIVersion: 100031 100032
+## APIVersion: 100032 100033
 ## SavedVariables: ReveriesVars
 ## DependsOn: LibAddonMenu-2.0
 ##
