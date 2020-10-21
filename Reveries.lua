@@ -123,6 +123,11 @@ local mementoNicknames =
     ["Ritual Circle Totem"]            = "ritualcircle",
     ["Jester's Festival Joke Popper"]  = "jokepop",
     ["Jubilee Cake 2018"]              = "cake2018",
+    ["Mostly Stable Juggling Potions"] = "jugglepotions",
+    ["Reliquary of Dark Designs"]      = "darkdesigns",
+    ["Thetys Ramarys's Bait Kit"]      = "baitkit",
+    ["Void Shard"]                     = "voidshard",
+    ["Throwing Bones"]                 = "throwbones",
 }
 
 -----------------------------------------------------------------------------
