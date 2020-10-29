@@ -363,7 +363,7 @@ function RV.RegisterSlashCommands()
         end
 
         for name in pairs(RV.mementoIndexes) do
-            alias = name:gsub(" ", "-")
+            local alias = name:gsub(" ", "-")
             RV.RegisterSubCommand(cmd, alias, name,
                                   "Play \"" .. name .. "\" memento")
             if mementoNicknames[name] then
@@ -409,7 +409,7 @@ function RV.Initialize()
     local num_emotes = GetNumEmotes()
 
     for i = 1, num_emotes do
-        name = GetEmoteSlashNameByIndex(i):sub(2)
+        local name = GetEmoteSlashNameByIndex(i):sub(2)
         RV.emoteIndexes[name] = i
     end
 
@@ -417,8 +417,8 @@ function RV.Initialize()
     local num_mementos = GetTotalCollectiblesByCategoryType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO)
 
     for i = 1, num_mementos do
-        id = GetCollectibleIdFromType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO, i)
-        name, _, _, _, unlocked = GetCollectibleInfo(id)
+        local id = GetCollectibleIdFromType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO, i)
+        local name, _, _, _, unlocked = GetCollectibleInfo(id)
         if unlocked then
             RV.mementoIndexes[name] = id
         end
