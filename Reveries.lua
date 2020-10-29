@@ -431,7 +431,7 @@ function RV.Initialize()
 
     for name in pairs(RV.mementoIndexes) do
         if mementoNicknames[name] then
-            RV.mementoIndexes[mementoNicknames[name]] = id
+            RV.mementoIndexes[mementoNicknames[name]] = RV.mementoIndexes[name]
         end
     end
 
