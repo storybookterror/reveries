@@ -5,6 +5,36 @@ local RV = {
     version = "0.1"
 }
 
+-- Automatically ignore all messages in these maps (like solo areas)
+RV.disallowedMaps = {
+    -- Vateshran Arena:
+    [1843] = true, -- The Wounding
+    [1844] = true, -- Hunter's Grotto
+    [1845] = true, -- The Brimstone Den
+    [1846] = true, -- Champion's Circle
+    -- Maelstrom Arena:
+    [977] = true,  -- Maelstrom Arena          (Lobby)
+    [988] = true,  -- Vale of the Surreal      (Stage 1)
+    [963] = true,  -- Seht's Balcony           (Stage 2)
+    [978] = true,  -- The Drome of Toxic Shock (Stage 3)
+    [970] = true,  -- Seht's Flywheel          (Stage 4)
+    [976] = true,  -- The Rink of Frozen Blood (Stage 5)
+    [973] = true,  -- The Spiral Shadows       (Stage 6)
+    [987] = true,  -- The Vault of Umbrage     (Stage 7)
+    [986] = true,  -- The Igneous Cistern      (Stage 8)
+    [985] = true,  -- The Theater of Despair   (Stage 9)
+    -- Thieves Guild Heists:
+    [827] = true,  -- Secluded Sewers
+    [831] = true,  -- Deadhollow Halls
+    [834] = true,  -- The Hideaway
+    [835] = true,  -- Glittering Grotto
+    [829] = true,  -- Underground Sepulcher
+    -- Dark Brotherhood Sacraments:
+    [828] = true,  -- Smuggler's Den
+    [833] = true,  -- Sewer Tenement
+    [830] = true,  -- Trader's Cove
+}
+
 -- Mapping from emote slash command to numeric index
 RV.emoteIndexes = {}
 RV.mementoIndexes = {}
@@ -292,6 +322,11 @@ function RV.OnChatMessageChannel(eventCode, channelType, fromCharacter, msg, _, 
         if RV.vars.dungeons == "Only Group" and not IsPlayerInGroup(fromAccount) then
             return
         end
+    end
+
+    -- Ignore messages in specific disallowed maps
+    if RV.disallowedMaps[GetCurrentMapId()] then
+        return
     end
 
     msg = msg:sub(4)
