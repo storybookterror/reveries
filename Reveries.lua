@@ -295,6 +295,34 @@ function RV.CreateSettingsPanel()
     LAM2:RegisterOptionControls(RV.name, options)
 end
 
+function RV.PlayMemento(name)
+    local memento = RV.mementoIndexes[name]
+
+    if not memento then
+        d(RV.name .. ': unknown memento "' .. msg .. '"')
+    elseif IsCollectibleUsable(memento) then
+        UseCollectible(memento)
+    else
+        local blockReason = GetCollectibleBlockReason(memento)
+        local blockReasons = {
+            [COLLECTIBLE_USAGE_BLOCK_REASON_BLOCKED_BY_SUBZONE] = "unable to use in subzone",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_BLOCKED_BY_ZONE] = "unable to use in zone",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_DEAD] = "dead",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_ALLIANCE] = "invalid alliance",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_CLASS] = "class",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_COLLECTIBLE] = "invalid collectible",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_GENDER] = "invalid gender",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_RACE] = "invalid race",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_IN_WATER] = "in water",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_ON_COOLDOWN] = "on cooldown",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_ON_MOUNT] = "on mount",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_PLACED_IN_HOUSE] = "placed in house",
+            [COLLECTIBLE_USAGE_BLOCK_REASON_TARGET_REQUIRED] = "requires target",
+        }
+        d(RV.name .. ': Cannot use memento (' .. (blockReasons[blockReason] or 'unknown reason') .. ')')
+    end
+end
+
 -----------------------------------------------------------------------------
 -- Handle Chat Messages
 -----------------------------------------------------------------------------
@@ -343,26 +371,8 @@ function RV.OnChatMessageChannel(eventCode, channelType, fromCharacter, msg, _, 
     elseif memento then
         if RV.vars.disallowed_mementos[memento] then
             d(RV.name .. ': Disallowed memento <' .. msg .. '>...ignoring.')
-        elseif IsCollectibleUsable(memento) then
-            UseCollectible(memento)
         else
-            local blockReason = GetCollectibleBlockReason(memento)
-            local blockReasons = {
-                [COLLECTIBLE_USAGE_BLOCK_REASON_BLOCKED_BY_SUBZONE] = "unable to use in subzone",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_BLOCKED_BY_ZONE] = "unable to use in zone",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_DEAD] = "dead",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_ALLIANCE] = "invalid alliance",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_CLASS] = "class",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_COLLECTIBLE] = "invalid collectible",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_GENDER] = "invalid gender",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_INVALID_RACE] = "invalid race",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_IN_WATER] = "in water",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_ON_COOLDOWN] = "on cooldown",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_ON_MOUNT] = "on mount",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_PLACED_IN_HOUSE] = "placed in house",
-                [COLLECTIBLE_USAGE_BLOCK_REASON_TARGET_REQUIRED] = "requires target",
-            }
-            d(RV.name .. ': Cannot use memento (' .. (blockReasons[blockReason] or 'unknown reason') .. ')')
+            RV.PlayMemento(msg)
         end
     else
         d(RV.name .. ': Unrecognized command: ' .. msg)
