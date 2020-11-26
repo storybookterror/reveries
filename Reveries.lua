@@ -176,6 +176,16 @@ function RV.CreateSettingsPanel()
                 end
         },
         {
+            type = "dropdown",
+            name = "In Dungeons/Trials...",
+            tooltip = "Listen normally / Only listen to group members / Ignore everyone (disable)",
+            width = "full",
+            choices = { "Allow", "Only Group", "Ignore" },
+            default = RV.vars.dungeons,
+            getFunc = function() return RV.vars.dungeons end,
+            setFunc = function(value) RV.vars.dungeons = value end,
+        },
+        {
             type = "submenu",
             name = "Chat Channels",
             controls = {}
@@ -213,7 +223,7 @@ function RV.CreateSettingsPanel()
         local channelEnum = chanInfo[1]
         local channelName = chanInfo[2]
 
-        table.insert(options[3].controls, {
+        table.insert(options[4].controls, {
             type = "checkbox",
             name = channelName,
             width = "full",
@@ -226,7 +236,7 @@ function RV.CreateSettingsPanel()
     -- Add emote checkboxes
     sortedEmotes = sortedKeys(RV.emoteIndexes)
     for _, k in ipairs(sortedEmotes) do
-        table.insert(options[4].controls, {
+        table.insert(options[5].controls, {
             type = "checkbox",
             name = "/" .. k,
             width = "full",
@@ -241,7 +251,7 @@ function RV.CreateSettingsPanel()
     for _, k in pairs(sortedMementos) do
         if k:lower() ~= k then
             local m = RV.mementoIndexes[k]
-            table.insert(options[5].controls, {
+            table.insert(options[6].controls, {
                 type = "checkbox",
                 name = mementoNicknames[k] and string.format("%s [%s]", k, mementoNicknames[k]) or k,
                 width = "full",
@@ -272,6 +282,16 @@ function RV.OnChatMessageChannel(eventCode, channelType, fromCharacter, msg, _, 
     -- Ignore any messages not prefixed for our add-on
     if msg:sub(1, 3):upper() ~= "RV " then
         return
+    end
+
+    -- Ignore messages in dungeons based on settings
+    if GetCurrentZoneDungeonDifficulty() ~= DUNGEON_DIFFICULTY_NONE then
+        if RV.vars.dungeons == "Ignore" then
+            return
+        end
+        if RV.vars.dungeons == "Only Group" and not IsPlayerInGroup(fromAccount) then
+            return
+        end
     end
 
     msg = msg:sub(4)
@@ -385,6 +405,7 @@ function RV.Initialize()
         disallowed_emotes = {},
         disallowed_mementos = {},
         active = true,
+        dungeons = "Only Group",
         activeChats = {
             [CHAT_CHANNEL_EMOTE] = false,
             [CHAT_CHANNEL_SAY] = false,
