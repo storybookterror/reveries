@@ -385,7 +385,7 @@ end
 -----------------------------------------------------------------------------
 -- Slash Command Handlers
 -----------------------------------------------------------------------------
-function RV.HandleSlashCommand(msg)
+function RV.HandleSlashCommandRV(msg)
     if msg == "on" then
         RV.Enable()
         d(RV.name .. " activated - will listen to chat")
@@ -410,7 +410,7 @@ end
 function RV.RegisterSlashCommands()
     local lsc = LibSlashCommander
     if lsc then
-        local cmd = lsc:Register("/rv", RV.HandleSlashCommand, "Reveries")
+        local cmd = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries")
 
         for name in pairs(RV.emoteIndexes) do
             RV.RegisterSubCommand(cmd, name, name,
@@ -427,7 +427,7 @@ function RV.RegisterSlashCommands()
             end
         end
     else
-        SLASH_COMMANDS["/rv"] = RV.HandleSlashCommand
+        SLASH_COMMANDS["/rv"] = RV.HandleSlashCommandRV
     end
 end
 
