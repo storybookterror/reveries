@@ -446,9 +446,12 @@ function RV.RegisterSlashCommands()
                                       "Play \"" .. name .. "\" memento")
             end
         end
+
+        local scrycmd = lsc:Register("/scry", function() RV.PlayMemento("scry") end, "Activate the Antiquarian's Eye Tool")
     else
         SLASH_COMMANDS["/rv"] = RV.HandleSlashCommandRV
         SLASH_COMMANDS["/memento"] = RV.PlayMemento
+        SLASH_COMMANDS["/scry"] = function() RV.PlayMemento("scry") end
     end
 end
 
