@@ -409,10 +409,10 @@ function RV.HandleSlashCommandRV(msg)
     end
 end
 
-function RV.RegisterSubCommand(cmd, shortname, longname, description)
+function RV.RegisterSubCommand(cmd, shortname, longname, callback, description)
     local sub = cmd:RegisterSubCommand()
     sub:AddAlias(shortname)
-    sub:SetCallback(function() StartChatInput("rv " .. longname) end)
+    sub:SetCallback(callback)
     sub:SetDescription(description)
 end
 
@@ -420,24 +420,35 @@ end
 function RV.RegisterSlashCommands()
     local lsc = LibSlashCommander
     if lsc then
-        local cmd = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries")
+        local rvcmd = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries: Synchronize Action")
+        local memecmd = lsc:Register("/memento", RV.HandleSlashCommandMemento, "Reveries: Activate Memento for Self")
 
         for name in pairs(RV.emoteIndexes) do
-            RV.RegisterSubCommand(cmd, name, name,
+            RV.RegisterSubCommand(rvcmd, name, name,
+                                  function() StartChatInput("rv " .. name) end,
                                   "Play /" .. name .. " emote")
         end
 
         for name in pairs(RV.mementoIndexes) do
             local alias = name:gsub(" ", "-")
-            RV.RegisterSubCommand(cmd, alias, name,
+            RV.RegisterSubCommand(rvcmd, alias, name,
+                                  function() StartChatInput("rv " .. name) end,
+                                  "Play \"" .. name .. "\" memento")
+            RV.RegisterSubCommand(memecmd, alias, name,
+                                  function() RV.PlayMemento(name) end,
                                   "Play \"" .. name .. "\" memento")
             if mementoNicknames[name] then
-                RV.RegisterSubCommand(cmd, mementoNicknames[name], name,
+                RV.RegisterSubCommand(rvcmd, mementoNicknames[name], name,
+                                      function() StartChatInput("rv " .. name) end,
+                                      "Play \"" .. name .. "\" memento")
+                RV.RegisterSubCommand(memecmd, mementoNicknames[name], name,
+                                      function() RV.PlayMemento(name) end,
                                       "Play \"" .. name .. "\" memento")
             end
         end
     else
         SLASH_COMMANDS["/rv"] = RV.HandleSlashCommandRV
+        SLASH_COMMANDS["/memento"] = RV.PlayMemento
     end
 end
 
