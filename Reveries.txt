@@ -3,7 +3,7 @@
 ## Author: |cf7a009StorybookTerror|r
 ## Version: 0.3
 ## APIVersion: 100032 100033
-## SavedVariables: ReveriesVars
+## SavedVariables: ReveriesVars ReveriesServerVars
 ## DependsOn: LibAddonMenu-2.0
 ## OptionalDependsOn: LibSlashCommander
 ##

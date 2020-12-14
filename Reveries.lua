@@ -271,8 +271,8 @@ function RV.CreateSettingsPanel()
             name = "/" .. k,
             width = "full",
             default = true,
-            getFunc = function() return not RV.vars.disallowed_emotes[k] end,
-            setFunc = function(value) if value then RV.vars.disallowed_emotes[k] = nil else RV.vars.disallowed_emotes[k] = not value end end,
+            getFunc = function() return not RV.globals.disallowed_emotes[k] end,
+            setFunc = function(value) if value then RV.globals.disallowed_emotes[k] = nil else RV.globals.disallowed_emotes[k] = not value end end,
         })
     end
 
@@ -286,8 +286,8 @@ function RV.CreateSettingsPanel()
                 name = mementoNicknames[k] and string.format("%s [%s]", k, mementoNicknames[k]) or k,
                 width = "full",
                 default = true,
-                getFunc = function() return not RV.vars.disallowed_mementos[m] end,
-                setFunc = function(value) if value then RV.vars.disallowed_mementos[m] = nil else RV.vars.disallowed_mementos[m] = true end end,
+                getFunc = function() return not RV.globals.disallowed_mementos[m] end,
+                setFunc = function(value) if value then RV.globals.disallowed_mementos[m] = nil else RV.globals.disallowed_mementos[m] = true end end,
             })
         end
     end
@@ -363,13 +363,13 @@ function RV.OnChatMessageChannel(eventCode, channelType, fromCharacter, msg, _, 
     local memento = RV.mementoIndexes[msg]
 
     if emote then
-        if RV.vars.disallowed_emotes[msg] then
+        if RV.globals.disallowed_emotes[msg] then
             d(RV.name .. ': Disallowed emote /' .. msg .. '...ignoring.')
         else
             PlayEmoteByIndex(emote)
         end
     elseif memento then
-        if RV.vars.disallowed_mementos[memento] then
+        if RV.globals.disallowed_mementos[memento] then
             d(RV.name .. ': Disallowed memento <' .. msg .. '>...ignoring.')
         else
             RV.PlayMemento(msg)
@@ -460,10 +460,11 @@ end
 -----------------------------------------------------------------------------
 function RV.Initialize()
     -- Set up saved variables
-    RV.vars = ZO_SavedVars:NewAccountWide("ReveriesVars", 1, nil, {
+    RV.globals = ZO_SavedVars:NewAccountWide("ReveriesVars", 1, nil, {
         disallowed_emotes = {},
         disallowed_mementos = {},
-        active = true,
+    })
+    RV.vars = ZO_SavedVars:NewAccountWide("ReveriesServerVars", 1, GetWorldName(), {
         dungeons = "Only Group",
         activeChats = {
             [CHAT_CHANNEL_EMOTE] = false,
@@ -484,6 +485,15 @@ function RV.Initialize()
             [CHAT_CHANNEL_OFFICER_5] = false,
         },
     })
+
+    -- Migrate any old global settings to the new per-server ones, if they're not already set up.
+    if RV.vars.active == nil then
+        RV.vars.active = true
+        if RV.globals.active ~= nil then
+            RV.vars.active = RV.globals.active
+            RV.vars.activeChats = RV.globals.activeChats
+        end
+    end
 
     -- Set up Emote -> Index mapping
     local num_emotes = GetNumEmotes()
