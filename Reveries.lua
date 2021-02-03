@@ -421,7 +421,7 @@ function RV.RegisterSlashCommands()
     local lsc = LibSlashCommander
     if lsc then
         local rvcmd = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries: Synchronize Action")
-        local memecmd = lsc:Register("/memento", RV.HandleSlashCommandMemento, "Reveries: Activate Memento for Self")
+        local memecmd = lsc:Register("/meme", RV.HandleSlashCommandMemento, "Reveries: Activate Memento for Self")
 
         for name in pairs(RV.emoteIndexes) do
             RV.RegisterSubCommand(rvcmd, name, name,
@@ -450,7 +450,7 @@ function RV.RegisterSlashCommands()
         local scrycmd = lsc:Register("/scry", function() RV.PlayMemento("Antiquarian's Eye") end, "Activate the Antiquarian's Eye Tool")
     else
         SLASH_COMMANDS["/rv"] = RV.HandleSlashCommandRV
-        SLASH_COMMANDS["/memento"] = RV.PlayMemento
+        SLASH_COMMANDS["/meme"] = RV.PlayMemento
         SLASH_COMMANDS["/scry"] = function() RV.PlayMemento("Antiquarian's Eye") end
     end
 end
