@@ -299,7 +299,7 @@ function RV.PlayMemento(name)
     local memento = RV.mementoIndexes[name]
 
     if not memento then
-        d(RV.name .. ': unknown memento "' .. msg .. '"')
+        d(RV.name .. ': unknown memento "' .. name .. '"')
     elseif IsCollectibleUsable(memento) then
         UseCollectible(memento)
     else
