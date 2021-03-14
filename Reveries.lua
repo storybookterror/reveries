@@ -206,8 +206,8 @@ function RV.CreateSettingsPanel()
             func = function()
                 if RVFrame:IsHidden() then
                     RVFrameIcon:SetAlpha(1)
-                    RVFrameBar:SetAlpha(0.6)
-                    RVFrameBar:SetWidth(250)
+                    RVFrameBar:SetAlpha(RV.barAlpha)
+                    RVFrameBar:SetWidth(RV.barWidth)
                     RVFrame:SetHidden(false)
                 else
                     RVFrame:SetHidden(true)
@@ -459,19 +459,19 @@ local function UpdateCollectibleBar(id)
 
     RVFrameIcon:SetTexture(GetCollectibleIcon(id))
     RVFrameIcon:SetAlpha(1)
-    RVFrameBar:SetAlpha(0.6)
+    RVFrameBar:SetAlpha(RV.barAlpha)
     RVFrame:SetHidden(false)
 
     local timeline = ANIMATION_MANAGER:CreateTimeline()
     local barSize = timeline:InsertAnimation(ANIMATION_SIZE, RVFrameBar)
-    barSize:SetStartAndEndWidth(250, 0)
+    barSize:SetStartAndEndWidth(RV.barWidth, 0)
     barSize:SetStartAndEndHeight(RVFrameBar:GetHeight(), RVFrameBar:GetHeight())
     barSize:SetDuration(duration)
 
     local barFadeTime = 1500
     local barFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameBar)
     barFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameBar, duration - barFadeTime)
-    barFade:SetAlphaValues(0.6, 0)
+    barFade:SetAlphaValues(RV.barAlpha, 0)
     barFade:SetDuration(barFadeTime)
 
     local iconFadeTime = 500
@@ -644,6 +644,9 @@ function RV.Initialize()
     else
         RV.SetDefaultCollectibleBarPosition()
     end
+
+    RV.barAlpha = RVFrameBar:GetAlpha()
+    RV.barWidth = RVFrameBar:GetWidth()
 end
 
 -----------------------------------------------------------------------------
