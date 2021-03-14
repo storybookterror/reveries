@@ -199,7 +199,26 @@ function RV.CreateSettingsPanel()
             getFunc = function() return RV.vars.showbar end,
             setFunc = function(value) RV.vars.showbar = value end,
         },
-
+        {
+            type = "button",
+            name = "Show to Drag Position",
+            tooltip = "Temporarily show the bar so you can drag it around the screen.",
+            func = function()
+                if RVFrame:IsHidden() then
+                    RVFrameIcon:SetAlpha(1)
+                    RVFrameBar:SetAlpha(0.6)
+                    RVFrameBar:SetWidth(250)
+                    RVFrame:SetHidden(false)
+                else
+                    RVFrame:SetHidden(true)
+                end
+            end
+        },
+        {
+            type = "button",
+            name = "Use Default Position",
+            func = RV.SetDefaultCollectibleBarPosition
+        },
         {
             type = "header",
             name = "Synchronized Actions",
@@ -422,6 +441,17 @@ end
 -----------------------------------------------------------------------------
 -- Collectible UI Bar
 -----------------------------------------------------------------------------
+function RV.SetDefaultCollectibleBarPosition()
+    RV.vars.barX = ZO_CompassFrameLeft:GetLeft() + 5
+    RV.vars.barY = ZO_CompassFrameLeft:GetTop() - 45
+    RVFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, RV.vars.barX, RV.vars.barY)
+end
+
+local function CollectibleBarOnMoveStop()
+    RV.vars.barX = RVFrame:GetLeft()
+    RV.vars.barY = RVFrame:GetTop()
+end
+
 local function UpdateCollectibleBar(id)
     local remaining, duration = GetCollectibleCooldownAndDuration(id)
 
@@ -605,7 +635,15 @@ function RV.Initialize()
         RV.Enable()
     end
 
+    -- Hook up memento cooldown bar and restore saved position
     SecurePostHook("UseCollectible", ScheduleCollectibleUpdate)
+
+    RVFrame:SetHandler("OnMoveStop", CollectibleBarOnMoveStop)
+    if RV.vars.barX and RV.vars.barY then
+        RVFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, RV.vars.barX, RV.vars.barY)
+    else
+        RV.SetDefaultCollectibleBarPosition()
+    end
 end
 
 -----------------------------------------------------------------------------
