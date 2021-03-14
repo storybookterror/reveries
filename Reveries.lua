@@ -187,7 +187,28 @@ function RV.CreateSettingsPanel()
     local options = {
         {
             type = "header",
-            name = "Settings",
+            name = "Memento Cooldown Bar",
+        },
+        {
+            type = "dropdown",
+            name = "Show Memento Cooldown Bar",
+            tooltip = "Display the cooldown of an active memento at the top of the screen.",
+            width = "full",
+            choices = { "On", "Scrying Only", "Off" },
+            default = RV.vars.showbar,
+            getFunc = function() return RV.vars.showbar end,
+            setFunc = function(value) RV.vars.showbar = value end,
+        },
+
+        {
+            type = "header",
+            name = "Synchronized Actions",
+        },
+        {
+            type = "description",
+            text = [[Reveries can listen to chat for messages like "RV dance" and auto-activate an emote or memento.  This makes it possible to synchronize actions (say, have everyone dance at once).  You can configure this below.
+
+"/rv on" and "/rv off" let you quickly toggle this feature.]]
         },
         {
             type = "checkbox",
@@ -436,6 +457,10 @@ local function UpdateCollectibleBar(id)
 end
 
 local function ScheduleCollectibleUpdate(id)
+    if RV.vars.showbar == "Off" or (RV.vars.showbar == "Scrying Only" and id ~= RV.mementoIndexes["Antiquarian's Eye"]) then
+        return
+    end
+
     -- The collectible duration isn't queriable at UseCollectible() time,
     -- because it hasn't actually activated yet.  Wait a few milliseconds
     -- before actually trying to do any work.
@@ -516,6 +541,7 @@ function RV.Initialize()
     })
     RV.vars = ZO_SavedVars:NewAccountWide("ReveriesServerVars", 1, GetWorldName(), {
         dungeons = "Only Group",
+        showbar = "On",
         activeChats = {
             [CHAT_CHANNEL_EMOTE] = false,
             [CHAT_CHANNEL_SAY] = false,
