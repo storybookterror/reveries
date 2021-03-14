@@ -191,7 +191,7 @@ function RV.CreateSettingsPanel()
         },
         {
             type = "checkbox",
-            name = "Active",
+            name = "Listen to Chat",
             tooltip = "When set, Reveries will listen to chat and perform emotes and mementos.",
             width = "full",
             default = RV.vars.active,
@@ -386,7 +386,7 @@ function RV.OnChatMessageChannel(eventCode, channelType, fromCharacter, msg, _, 
 end
 
 -----------------------------------------------------------------------------
--- On/Off
+-- Toggle Listening to Chat
 -----------------------------------------------------------------------------
 function RV.Enable()
     RV.vars.active = true
