@@ -21,3 +21,4 @@
 ##
 
 Reveries.lua
+Reveries.xml

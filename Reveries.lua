@@ -399,6 +399,50 @@ function RV.Disable()
 end
 
 -----------------------------------------------------------------------------
+-- Collectible UI Bar
+-----------------------------------------------------------------------------
+local function UpdateCollectibleBar(id)
+    local remaining, duration = GetCollectibleCooldownAndDuration(id)
+
+    duration = math.max(duration, 2000)
+
+    RVFrameIcon:SetTexture(GetCollectibleIcon(id))
+    RVFrameIcon:SetAlpha(1)
+    RVFrameBar:SetAlpha(0.6)
+    RVFrame:SetHidden(false)
+
+    local timeline = ANIMATION_MANAGER:CreateTimeline()
+    local barSize = timeline:InsertAnimation(ANIMATION_SIZE, RVFrameBar)
+    barSize:SetStartAndEndWidth(250, 0)
+    barSize:SetStartAndEndHeight(RVFrameBar:GetHeight(), RVFrameBar:GetHeight())
+    barSize:SetDuration(duration)
+
+    local barFadeTime = 1500
+    local barFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameBar)
+    barFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameBar, duration - barFadeTime)
+    barFade:SetAlphaValues(0.6, 0)
+    barFade:SetDuration(barFadeTime)
+
+    local iconFadeTime = 500
+    local iconFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameIcon)
+    iconFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameIcon, duration - iconFadeTime)
+    iconFade:SetAlphaValues(1, 0)
+    iconFade:SetDuration(iconFadeTime)
+
+    timeline:SetHandler('OnStop', function() RVFrame:SetHidden(true) end)
+
+    timeline:SetPlaybackType(ANIMATION_PLAYBACK_ONE_SHOT)
+    timeline:PlayFromStart()
+end
+
+local function ScheduleCollectibleUpdate(id)
+    -- The collectible duration isn't queriable at UseCollectible() time,
+    -- because it hasn't actually activated yet.  Wait a few milliseconds
+    -- before actually trying to do any work.
+    zo_callLater(function() UpdateCollectibleBar(id) end, 250)
+end
+
+-----------------------------------------------------------------------------
 -- Slash Command Handlers
 -----------------------------------------------------------------------------
 function RV.HandleSlashCommandRV(msg)
@@ -534,6 +578,8 @@ function RV.Initialize()
     if RV.vars.active then
         RV.Enable()
     end
+
+    SecurePostHook("UseCollectible", ScheduleCollectibleUpdate)
 end
 
 -----------------------------------------------------------------------------
