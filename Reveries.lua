@@ -215,21 +215,6 @@ function RV.CreateSettingsPanel()
             getFunc = function() return RV.vars.dungeons end,
             setFunc = function(value) RV.vars.dungeons = value end,
         },
-        {
-            type = "submenu",
-            name = "Chat Channels",
-            controls = {}
-        },
-        {
-            type = "submenu",
-            name = "Emotes to Allow",
-            controls = {}
-        },
-        {
-            type = "submenu",
-            name = "Mementos to Allow",
-            controls = {}
-        },
     }
 
     -- Add chat channels
@@ -242,6 +227,13 @@ function RV.CreateSettingsPanel()
         { CHAT_CHANNEL_ZONE, "/zone" },
     }
 
+    chatCheckboxes = {
+        type = "submenu",
+        name = "Chat Channels",
+        controls = {}
+    }
+    options[#options + 1] = chatCheckboxes
+
     for i = 1, 5 do
         local id = GetGuildId(i)
         local guild = GetGuildName(id)
@@ -253,7 +245,7 @@ function RV.CreateSettingsPanel()
         local channelEnum = chanInfo[1]
         local channelName = chanInfo[2]
 
-        table.insert(options[4].controls, {
+        table.insert(chatCheckboxes.controls, {
             type = "checkbox",
             name = channelName,
             width = "full",
@@ -264,9 +256,16 @@ function RV.CreateSettingsPanel()
     end
 
     -- Add emote checkboxes
+    emoteCheckboxes = {
+        type = "submenu",
+        name = "Emotes to Allow",
+        controls = {}
+    }
+    options[#options + 1] = emoteCheckboxes
+
     sortedEmotes = sortedKeys(RV.emoteIndexes)
     for _, k in ipairs(sortedEmotes) do
-        table.insert(options[5].controls, {
+        table.insert(emoteCheckboxes.controls, {
             type = "checkbox",
             name = "/" .. k,
             width = "full",
@@ -277,11 +276,18 @@ function RV.CreateSettingsPanel()
     end
 
     -- Add memento checkboxes
+    mementoCheckboxes = {
+        type = "submenu",
+        name = "Mementos to Allow",
+        controls = {}
+    }
+    options[#options + 1] = mementoCheckboxes
+
     sortedMementos = sortedKeys(RV.mementoIndexes)
     for _, k in pairs(sortedMementos) do
         if k:lower() ~= k then
             local m = RV.mementoIndexes[k]
-            table.insert(options[6].controls, {
+            table.insert(mementoCheckboxes.controls, {
                 type = "checkbox",
                 name = mementoNicknames[k] and string.format("%s [%s]", k, mementoNicknames[k]) or k,
                 width = "full",
