@@ -633,6 +633,12 @@ function RV.Initialize()
 
     RV.barAlpha = RVFrameBar:GetAlpha()
     RV.barWidth = RVFrameBar:GetWidth()
+    RVFrameBar:SetAlpha(0)
+    RVFrameIcon:SetAlpha(0)
+
+    local fragment = ZO_SimpleSceneFragment:New(RVFrame)
+    SCENE_MANAGER:GetScene("hud"):AddFragment(fragment)
+    SCENE_MANAGER:GetScene("hudui"):AddFragment(fragment)
 end
 
 -----------------------------------------------------------------------------
