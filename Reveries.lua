@@ -201,22 +201,8 @@ function RV.CreateSettingsPanel()
         },
         {
             type = "button",
-            name = "Show to Drag Position",
-            tooltip = "Temporarily show the bar so you can drag it around the screen.",
-            func = function()
-                if RVFrame:IsHidden() then
-                    RVFrameIcon:SetAlpha(1)
-                    RVFrameBar:SetAlpha(RV.barAlpha)
-                    RVFrameBar:SetWidth(RV.barWidth)
-                    RVFrame:SetHidden(false)
-                else
-                    RVFrame:SetHidden(true)
-                end
-            end
-        },
-        {
-            type = "button",
-            name = "Use Default Position",
+            name = "Reset to Default Position",
+            tooltip = "If you've dragged the bar to a custom location on screen, this will reset it to the default location.",
             func = RV.SetDefaultCollectibleBarPosition
         },
         {
