@@ -427,15 +427,15 @@ end
 -----------------------------------------------------------------------------
 -- Collectible UI Bar
 -----------------------------------------------------------------------------
-function RV.SetDefaultCollectibleBarPosition()
-    RV.vars.barX = ZO_CompassFrameLeft:GetLeft() + 5
-    RV.vars.barY = ZO_CompassFrameLeft:GetTop() - 45
-    RVFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, RV.vars.barX, RV.vars.barY)
-end
-
 local function CollectibleBarOnMoveStop()
     RV.vars.barX = RVFrame:GetLeft()
     RV.vars.barY = RVFrame:GetTop()
+end
+
+function RV.SetDefaultCollectibleBarPosition()
+    RVFrame:ClearAnchors()
+    RVFrame:SetAnchor(BOTTOMLEFT, ZO_CompassFrameLeft, TOPLEFT, 0, -5)
+    CollectibleBarOnMoveStop()
 end
 
 local function UpdateCollectibleBar(id)
@@ -446,7 +446,6 @@ local function UpdateCollectibleBar(id)
     RVFrameIcon:SetTexture(GetCollectibleIcon(id))
     RVFrameIcon:SetAlpha(1)
     RVFrameBar:SetAlpha(RV.barAlpha)
-    RVFrame:SetHidden(false)
 
     local timeline = ANIMATION_MANAGER:CreateTimeline()
     local barSize = timeline:InsertAnimation(ANIMATION_SIZE, RVFrameBar)
@@ -465,8 +464,6 @@ local function UpdateCollectibleBar(id)
     iconFade = timeline:InsertAnimation(ANIMATION_ALPHA, RVFrameIcon, duration - iconFadeTime)
     iconFade:SetAlphaValues(1, 0)
     iconFade:SetDuration(iconFadeTime)
-
-    timeline:SetHandler('OnStop', function() RVFrame:SetHidden(true) end)
 
     timeline:SetPlaybackType(ANIMATION_PLAYBACK_ONE_SHOT)
     timeline:PlayFromStart()
@@ -625,7 +622,9 @@ function RV.Initialize()
     SecurePostHook("UseCollectible", ScheduleCollectibleUpdate)
 
     RVFrame:SetHandler("OnMoveStop", CollectibleBarOnMoveStop)
+
     if RV.vars.barX and RV.vars.barY then
+        RVFrame:ClearAnchors()
         RVFrame:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, RV.vars.barX, RV.vars.barY)
     else
         RV.SetDefaultCollectibleBarPosition()
