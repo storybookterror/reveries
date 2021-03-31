@@ -515,7 +515,7 @@ function RV.RegisterSlashCommands()
     local lsc = LibSlashCommander
     if lsc then
         local rvcmd = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries: Synchronize Action")
-        local memecmd = lsc:Register("/meme", RV.HandleSlashCommandMemento, "Reveries: Activate Memento for Self")
+        local memecmd = lsc:Register("/meme", RV.PlayMemento, "Reveries: Activate Memento for Self")
 
         for name in pairs(RV.emoteIndexes) do
             RV.RegisterSubCommand(rvcmd, name, name,
