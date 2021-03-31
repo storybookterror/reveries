@@ -476,6 +476,10 @@ local function ScheduleCollectibleUpdate(id)
         return
     end
 
+    if GetCollectibleCategoryType(id) ~= COLLECTIBLE_CATEGORY_TYPE_MEMENTO then
+        return
+    end
+
     -- The collectible duration isn't queriable at UseCollectible() time,
     -- because it hasn't actually activated yet.  Wait a few milliseconds
     -- before actually trying to do any work.
