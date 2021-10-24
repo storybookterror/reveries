@@ -450,6 +450,13 @@ local function UpdateCollectibleBar(id)
         return
     end
 
+    -- If you try and use a collectible while it's on cooldown, we'll
+    -- end up here with the cooldown bar already in place.  Just let
+    -- it continue the existing animation rather than resetting it.
+    if RVFrameIcon:GetAlpha() > 0 then
+        return
+    end
+
     duration = math.max(duration, 2000)
 
     RVFrameIcon:SetTexture(GetCollectibleIcon(id))
