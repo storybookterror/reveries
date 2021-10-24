@@ -443,6 +443,13 @@ end
 local function UpdateCollectibleBar(id)
     local remaining, duration = GetCollectibleCooldownAndDuration(id)
 
+    -- IsCollectibleUsable returns true for the Antiquarian's Eye when
+    -- not at a dig site, so we use it, but it fails, resulting in a
+    -- duration of zero.  Skip putting up the bar in that case.
+    if duration == 0 then
+        return
+    end
+
     duration = math.max(duration, 2000)
 
     RVFrameIcon:SetTexture(GetCollectibleIcon(id))
