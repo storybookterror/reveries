@@ -2,7 +2,7 @@ local LAM2 = LibAddonMenu2
 
 local RV = {
     name = "Reveries",
-    version = "0.7"
+    version = "0.8"
 }
 
 -- Automatically ignore all messages in these maps (like solo areas)
