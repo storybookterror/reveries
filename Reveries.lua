@@ -544,6 +544,12 @@ function RV.RegisterSubCommand(cmd, shortname, longname, callback, description)
     sub:SetDescription(description)
 end
 
+function RV.RegisterEmoteSubCommand(name)
+    RV.RegisterSubCommand(RV.SlashRV, name, name,
+                          function() StartChatInput("rv " .. name) end,
+                          "Play /" .. name .. " emote")
+end
+
 function RV.RegisterMementoSubCommand(name)
     local alias = name:gsub(" ", "-")
     RV.RegisterSubCommand(RV.SlashRV, alias, name,
@@ -570,9 +576,7 @@ function RV.RegisterSlashCommands()
         RV.SlashMeme = lsc:Register("/meme", RV.PlayMemento, "Reveries: Activate Memento for Self")
 
         for name in pairs(RV.emoteIndexes) do
-            RV.RegisterSubCommand(RV.SlashRV, name, name,
-                                  function() StartChatInput("rv " .. name) end,
-                                  "Play /" .. name .. " emote")
+            RV.RegisterEmoteSubCommand(name)
         end
 
         for name in pairs(RV.mementoIndexes) do
@@ -590,6 +594,38 @@ end
 -----------------------------------------------------------------------------
 -- Add-on initialization
 -----------------------------------------------------------------------------
+local function SetupEmoteMappings(id)
+    local name = GetEmoteSlashNameByIndex(id):sub(2)
+    RV.emoteIndexes[name] = id
+end
+
+local function SetupMementoMappings(id)
+    local name, _, _, _, unlocked = GetCollectibleInfo(id)
+    if unlocked then
+        RV.mementoIndexes[name] = id
+        if mementoShortNames[name] then
+            RV.mementoShortIndexes[mementoShortNames[name]] = id
+        end
+    end
+end
+
+local function SetupCollectibleMappings()
+    -- Set up Emote -> Index mapping
+    local num_emotes = GetNumEmotes()
+
+    for i = 1, num_emotes do
+        SetupEmoteMappings(i)
+    end
+
+    -- Set up Memento -> Index mapping
+    local num_mementos = GetTotalCollectiblesByCategoryType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO)
+
+    for i = 1, num_mementos do
+        local id = GetCollectibleIdFromType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO, i)
+        SetupMementoMappings(id)
+    end
+end
+
 function RV.Initialize()
     -- Set up saved variables
     RV.globals = ZO_SavedVars:NewAccountWide("ReveriesVars", 1, nil, {
@@ -628,27 +664,7 @@ function RV.Initialize()
         end
     end
 
-    -- Set up Emote -> Index mapping
-    local num_emotes = GetNumEmotes()
-
-    for i = 1, num_emotes do
-        local name = GetEmoteSlashNameByIndex(i):sub(2)
-        RV.emoteIndexes[name] = i
-    end
-
-    -- Set up Memento -> Index mapping
-    local num_mementos = GetTotalCollectiblesByCategoryType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO)
-
-    for i = 1, num_mementos do
-        local id = GetCollectibleIdFromType(COLLECTIBLE_CATEGORY_TYPE_MEMENTO, i)
-        local name, _, _, _, unlocked = GetCollectibleInfo(id)
-        if unlocked then
-            RV.mementoIndexes[name] = id
-            if mementoShortNames[name] then
-                RV.mementoShortIndexes[mementoShortNames[name]] = id
-            end
-        end
-    end
+    SetupCollectibleMappings()
 
     -- Set up Settings UI Panel
     RV.CreateSettingsPanel()
