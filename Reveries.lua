@@ -626,6 +626,22 @@ local function SetupCollectibleMappings()
     end
 end
 
+local function GetNextDirtyUnlockStateCollectibleIdIter(_, lastCollectibleId)
+    return GetNextDirtyUnlockStateCollectibleId(lastCollectibleId)
+end
+
+local function OnCollectiblesUnlockStateChanged()
+    -- TODO: Update the addon settings UI
+
+    for collectibleId in GetNextDirtyUnlockStateCollectibleIdIter do
+        local categoryType = GetCollectibleCategoryType(collectibleId)
+        if categoryType == COLLECTIBLE_CATEGORY_TYPE_MEMENTO then
+            SetupMementoMappings(collectibleId)
+            RV.RegisterMementoSubCommand(GetCollectibleName(collectibleId))
+        end
+    end
+end
+
 function RV.Initialize()
     -- Set up saved variables
     RV.globals = ZO_SavedVars:NewAccountWide("ReveriesVars", 1, nil, {
@@ -695,6 +711,8 @@ function RV.Initialize()
     local fragment = ZO_SimpleSceneFragment:New(RVFrame)
     SCENE_MANAGER:GetScene("hud"):AddFragment(fragment)
     SCENE_MANAGER:GetScene("hudui"):AddFragment(fragment)
+
+    EVENT_MANAGER:RegisterForEvent(RV.name, EVENT_COLLECTIBLES_UNLOCK_STATE_CHANGED, function(_, ...) OnCollectiblesUnlockStateChanged(...) end)
 end
 
 -----------------------------------------------------------------------------
