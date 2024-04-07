@@ -38,11 +38,12 @@ RV.disallowedMaps = {
 -- Mapping from emote slash command to numeric index
 RV.emoteIndexes = {}
 RV.mementoIndexes = {}
+RV.mementoShortIndexes = {}
 
 -----------------------------------------------------------------------------
 -- Mapping from the full Memento name to a shortcut
 -----------------------------------------------------------------------------
-local mementoNicknames =
+local mementoShortNames =
 {
     ["Ghost Lantern"]                    = "ghostlantern",
     ["Snow Cadwell"]                     = "snowcadwell",
@@ -328,7 +329,7 @@ function RV.CreateSettingsPanel()
             local m = RV.mementoIndexes[k]
             table.insert(mementoCheckboxes.controls, {
                 type = "checkbox",
-                name = mementoNicknames[k] and string.format("%s [%s]", k, mementoNicknames[k]) or k,
+                name = mementoShortNames[k] and string.format("%s [%s]", k, mementoShortNames[k]) or k,
                 width = "full",
                 default = true,
                 getFunc = function() return not RV.globals.disallowed_mementos[m] end,
@@ -342,6 +343,10 @@ end
 
 function RV.PlayMemento(name)
     local memento = RV.mementoIndexes[name]
+
+    if not memento then
+        memento = RV.mementoShortIndexes[name]
+    end
 
     if not memento then
         d(RV.name .. ': unknown memento "' .. name .. '"')
@@ -556,11 +561,11 @@ function RV.RegisterSlashCommands()
             RV.RegisterSubCommand(memecmd, alias, name,
                                   function() RV.PlayMemento(name) end,
                                   "Play \"" .. name .. "\" memento")
-            if mementoNicknames[name] then
-                RV.RegisterSubCommand(rvcmd, mementoNicknames[name], name,
+            if mementoShortNames[name] then
+                RV.RegisterSubCommand(rvcmd, mementoShortNames[name], name,
                                       function() StartChatInput("rv " .. name) end,
                                       "Play \"" .. name .. "\" memento")
-                RV.RegisterSubCommand(memecmd, mementoNicknames[name], name,
+                RV.RegisterSubCommand(memecmd, mementoShortNames[name], name,
                                       function() RV.PlayMemento(name) end,
                                       "Play \"" .. name .. "\" memento")
             end
@@ -631,6 +636,9 @@ function RV.Initialize()
         local name, _, _, _, unlocked = GetCollectibleInfo(id)
         if unlocked then
             RV.mementoIndexes[name] = id
+            if mementoShortNames[name] then
+                RV.mementoShortIndexes[mementoShortNames[name]] = id
+            end
         end
     end
 
@@ -638,12 +646,6 @@ function RV.Initialize()
     RV.CreateSettingsPanel()
 
     RV.RegisterSlashCommands()
-
-    for name in pairs(RV.mementoIndexes) do
-        if mementoNicknames[name] then
-            RV.mementoIndexes[mementoNicknames[name]] = RV.mementoIndexes[name]
-        end
-    end
 
     if RV.vars.active then
         RV.Enable()
