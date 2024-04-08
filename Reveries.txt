@@ -1,8 +1,8 @@
 ## Title: |c7635f7Reveries: Emotes and Mementos|r
 ## Description: Play simultaneous emotes and mementos for simple choreography
 ## Author: |cf7a009StorybookTerror|r
-## Version: 0.8
-## APIVersion: 101031 101032
+## Version: 0.9
+## APIVersion: 101041
 ## SavedVariables: ReveriesVars ReveriesServerVars
 ## DependsOn: LibAddonMenu-2.0
 ## OptionalDependsOn: LibSlashCommander
