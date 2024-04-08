@@ -172,6 +172,10 @@ local mementoShortNames =
     ["Jubilee Cake 2020"]                = "cake2020",
     ["Jubilee Cake 2021"]                = "cake2021",
     ["Jubilee Cake 2022"]                = "cake2022",
+    ["Jubilee Cake 2023"]                = "cake2023",
+    ["Jubilee Cake 2024"]                = "cake2024",
+    ["Jubilee Cake 2025"]                = "cake2025",
+    ["Jubilee Cake 2026"]                = "cake2026",
 }
 
 -----------------------------------------------------------------------------
