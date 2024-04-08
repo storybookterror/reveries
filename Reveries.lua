@@ -544,38 +544,42 @@ function RV.RegisterSubCommand(cmd, shortname, longname, callback, description)
     sub:SetDescription(description)
 end
 
+function RV.RegisterMementoSubCommand(name)
+    local alias = name:gsub(" ", "-")
+    RV.RegisterSubCommand(RV.SlashRV, alias, name,
+                          function() StartChatInput("rv " .. name) end,
+                          "Play \"" .. name .. "\" memento")
+    RV.RegisterSubCommand(RV.SlashMeme, alias, name,
+                          function() RV.PlayMemento(name) end,
+                          "Play \"" .. name .. "\" memento")
+    if mementoShortNames[name] then
+        RV.RegisterSubCommand(RV.SlashRV, mementoShortNames[name], name,
+                              function() StartChatInput("rv " .. name) end,
+                              "Play \"" .. name .. "\" memento")
+        RV.RegisterSubCommand(RV.SlashMeme, mementoShortNames[name], name,
+                              function() RV.PlayMemento(name) end,
+                              "Play \"" .. name .. "\" memento")
+    end
+end
+
 -- Register our slash commands
 function RV.RegisterSlashCommands()
     local lsc = LibSlashCommander
     if lsc then
-        local rvcmd = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries: Synchronize Action")
-        local memecmd = lsc:Register("/meme", RV.PlayMemento, "Reveries: Activate Memento for Self")
+        RV.SlashRV = lsc:Register("/rv", RV.HandleSlashCommandRV, "Reveries: Synchronize Action")
+        RV.SlashMeme = lsc:Register("/meme", RV.PlayMemento, "Reveries: Activate Memento for Self")
 
         for name in pairs(RV.emoteIndexes) do
-            RV.RegisterSubCommand(rvcmd, name, name,
+            RV.RegisterSubCommand(RV.SlashRV, name, name,
                                   function() StartChatInput("rv " .. name) end,
                                   "Play /" .. name .. " emote")
         end
 
         for name in pairs(RV.mementoIndexes) do
-            local alias = name:gsub(" ", "-")
-            RV.RegisterSubCommand(rvcmd, alias, name,
-                                  function() StartChatInput("rv " .. name) end,
-                                  "Play \"" .. name .. "\" memento")
-            RV.RegisterSubCommand(memecmd, alias, name,
-                                  function() RV.PlayMemento(name) end,
-                                  "Play \"" .. name .. "\" memento")
-            if mementoShortNames[name] then
-                RV.RegisterSubCommand(rvcmd, mementoShortNames[name], name,
-                                      function() StartChatInput("rv " .. name) end,
-                                      "Play \"" .. name .. "\" memento")
-                RV.RegisterSubCommand(memecmd, mementoShortNames[name], name,
-                                      function() RV.PlayMemento(name) end,
-                                      "Play \"" .. name .. "\" memento")
-            end
+            RV.RegisterMementoSubCommand(name)
         end
 
-        local scrycmd = lsc:Register("/scry", function() RV.PlayMemento("Antiquarian's Eye") end, "Activate the Antiquarian's Eye Tool")
+        RV.SlashScry = lsc:Register("/scry", function() RV.PlayMemento("Antiquarian's Eye") end, "Activate the Antiquarian's Eye Tool")
     else
         SLASH_COMMANDS["/rv"] = RV.HandleSlashCommandRV
         SLASH_COMMANDS["/meme"] = RV.PlayMemento
